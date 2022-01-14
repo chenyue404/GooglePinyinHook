@@ -1,26 +1,22 @@
 package com.chenyue404.googlepinyinhook
 
-import android.graphics.Color
+import android.content.SharedPreferences
 import android.inputmethodservice.InputMethodService
-import de.robv.android.xposed.IXposedHookLoadPackage
-import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.XposedBridge
-import de.robv.android.xposed.XposedHelpers
+import de.robv.android.xposed.*
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 
 class PluginEntry : IXposedHookLoadPackage {
     companion object {
         const val SP_FILE_NAME = "GooglePinyinHook"
-        const val SP_KEY = "turn"
+        const val SP_KEY = "color"
         const val TAG = "xposed-GooglePinyin-hook-"
+        const val PACKAGE_NAME = "com.google.android.inputmethod.pinyin"
 
-//        fun getPref(): SharedPreferences? {
-//            val pref = XSharedPreferences(BuildConfig.APPLICATION_ID, SP_FILE_NAME)
-//            return if (pref.file.canRead()) pref else null
-//        }
+        fun getPref(): SharedPreferences? {
+            val pref = XSharedPreferences(BuildConfig.APPLICATION_ID, SP_FILE_NAME)
+            return if (pref.file.canRead()) pref else null
+        }
     }
-
-    private val PACKAGE_NAME = "com.google.android.inputmethod.pinyin"
 
     private fun log(str: String) {
         XposedBridge.log(TAG + "\n" + str)
@@ -34,16 +30,6 @@ class PluginEntry : IXposedHookLoadPackage {
             return
         }
 
-//        XposedHelpers.findAndHookMethod(
-//            Window::class.java,
-//            "setNavigationBarColor",
-//            Int::class.java,
-//            object : XC_MethodHook() {
-//                override fun beforeHookedMethod(param: MethodHookParam) {
-//                    log(param.args[0] as String)
-//                }
-//            }
-//        )
         XposedHelpers.findAndHookMethod(
             "com.google.android.apps.inputmethod.libs.framework.core.GoogleInputMethodService",
             classLoader,
@@ -54,12 +40,14 @@ class PluginEntry : IXposedHookLoadPackage {
             ),
             object : XC_MethodHook() {
                 override fun afterHookedMethod(param: MethodHookParam) {
-                    log("com.google.android.apps.inputmethod.libs.framework.core.GoogleInputMethodService#a(com.google.android.apps.inputmethod.libs.framework.core.metadata.KeyboardViewDef.Type)")
-                    val color = XposedHelpers.getIntField(param.thisObject, "d")
-                    log("color=$color")
+//                    val color = XposedHelpers.getIntField(param.thisObject, "d")
+//                    log("color=$color")
+                    val color = getPref()?.getInt(SP_KEY, -1) ?: -1
+                    log("color=${java.lang.String.format("#%06X", 0xFFFFFF and color)}")
                     val inputMethodService = param.thisObject as InputMethodService
-                    inputMethodService.window.window?.navigationBarColor =
-                        Color.parseColor("#151a15")
+                    if (inputMethodService.window.window?.navigationBarColor != color) {
+                        inputMethodService.window.window?.navigationBarColor = color
+                    }
                 }
             }
         )

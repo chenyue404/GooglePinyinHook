@@ -1,28 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/llRoot"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="#" />
+    <View
+        android:id="@+id/v0"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        tools:background="@android:color/background_dark" />
 
     <EditText
         android:id="@+id/et0"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:digits="0123456789abcdefABCDEF"
         android:hint="000000"
-        android:maxLength="8"
+        android:inputType="text|textVisiblePassword"
+        android:maxLength="6"
         android:singleLine="true" />
 
-    <ImageButton
+    <Button
         android:id="@+id/bt0"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_save" />
+        android:text="预览" />
+
+    <Button
+        android:id="@+id/bt1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="应用" />
+
 
 </LinearLayout>
